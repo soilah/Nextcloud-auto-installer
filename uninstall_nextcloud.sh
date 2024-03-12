@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source ./env.sh
+source ./utils.sh
 source ./ncvars.env
 
 check_root
