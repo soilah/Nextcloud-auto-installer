@@ -10,8 +10,20 @@ BLUE='\033[0;34m'
 WHITE='\033[1;37m'
 
 
+check_create() {
+	FILENAME=$1
+	if [ -f ./$FILENAME ]; then
+		error "$FILENAME file exits. Maybe nextcloud needs to be uninstalled?"
+		exit
+	else
+		info "Creating $FILENAME file..."
+		touch ./$FILENAME
+	fi
+}
+
 
 check_root
+check_create ncvars.env
 
 
 ######################
@@ -41,6 +53,7 @@ read -p "Enter database name. default: nextcloud: " DBNAME
 if [ -z "$DBNAME" ]; then
 	info "No database name given, using default...";
 	DBNAME="nextcloud"
+	echo "export NC_DBNAME=$DBNAME" >> ./ncvars.env
 		
 fi
 
@@ -49,6 +62,7 @@ read -p "Enter database user. default nextcloud_user: " DBUSER
 if [ -z "$DBUSER" ]; then
 	info "No database user given, using default...";
 	DBUSER="nextcloud_user"
+	echo "export NC_DBUSER=$DBUSER" >> ./ncvars.env
 fi
 
 read -p "Enter database password. eg: not12345: " DBPASS
@@ -81,7 +95,7 @@ mysql -e "grant all privileges on "$DBNAME".* to '"$DBUSER"'@'%' identified by '
 ok "Done setting up mysql"
 
 echo "Installing PHP modules"
-apt-get install php-{ctype,curl,dom,fileinfo,gd,json,mbstring,posix,simplexml,xmlreader,xmlwriter,zip,fpm,mysql} -y > /dev/null
+apt-get install php-{ctype,curl,dom,fileinfo,gd,json,mbstring,posix,simplexml,xmlreader,xmlwriter,zip,fpm,mysql} -y &> /dev/null
 ok "Installed PHP modules"
 
 #############################
@@ -105,6 +119,7 @@ unzip latest.zip > /dev/null &> /dev/null
 mkdir /var/www/nextcloud &> /dev/null
 cp -r nextcloud /var/www
 chown -R www-data:www-data /var/www/nextcloud
+echo "export NC_INSTALLATION_DIRECTORY=/var/www/nextcloud" >> ./ncvars.env
 ok "Done"
 
 echo "Cleaning files"
