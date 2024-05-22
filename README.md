@@ -18,5 +18,5 @@
 ### TO DO LIST
 - Add support to install nextloud with https (without proxy with domain name)
 - Add option to install the data to different directory than the default.
-- Add options to keep database data?, or data folder after unistall.
+- Add options to keep database data?, or data folder after uninstall.
 - Add function to check if previous parts from previous installation exists (data folder,...)
