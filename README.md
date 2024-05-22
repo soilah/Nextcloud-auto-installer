@@ -16,7 +16,7 @@
 <p>Run the script uninstall_nextcloud.sh. It will delete ** <b>EVERYTHING</b> **, meaning that the database and user will be dropped, as well as the nextcloud folder <b>WITH THE DATA</b>.</p>
 
 ### TO DO LIST
-- Add suppor to install nextloud with https (without proxy with domain name)
+- Add support to install nextloud with https (without proxy with domain name)
 - Add option to install the data to different directory than the default.
 - Add options to keep database data?, or data folder after unistall.
 - Add function to check if previous parts from previous installation exists (data folder,...)
