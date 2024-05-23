@@ -1,5 +1,20 @@
 source ./env.sh
 
+#### Check machine architecture
+
+check_arch() {
+	if [ $(uname -m) == "x86_64" ]; then
+		echo "amd64"
+	elif [ $(uname -m) == "aarch64" ]; then
+		echo "arm64"
+	else
+		error "Unknown cpu architecture... Exiting."
+		exit
+	fi
+
+}
+
+
 #### Check if current user is root. If not exits the program.
 
 check_root() {
@@ -21,7 +36,8 @@ check_user() {
 		info "$USER user already exists. Continuing."
 	else
 		info "Creating $USER user..."
-		adduser --no-create-home --disabled-login --shell /bin/false --comment "$USER user" $USER &> /dev/null
+		adduser --no-create-home --disabled-login --shell /bin/false --gecos ""  $USER &> /dev/null
+
 		ok "User created sucessfully"
 	fi
 }
@@ -100,5 +116,16 @@ check_open_port() {
 	fi
 }
 
+#### Prompts a message to user to which the answer must be yes or no
+prompt_yes_no() {
+	MESSAGE=$1
+	
+	read -p "$MESSAGE" ANS
+	while [[ $ANS != 'yes' && $ANS != "no" ]];
+	do
+		echo "Type 'yes' or 'no'" > /dev/stderr
+		read -p "$MESSAGE" ANS
+	done
 
-
+	echo $ANS
+}
