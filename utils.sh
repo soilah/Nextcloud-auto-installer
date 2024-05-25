@@ -98,10 +98,17 @@ run_notify() {
 
 is_port_open() {
 	PORT=$1
-	lsof -i -P -n | grep LISTEN | awk '{ sub(/.*:/, ""); sub(/\(LISTEN.*/, ""); print}' | uniq | grep $PORT &> /dev/null
+	RET_PORT=$(lsof -i -P -n | grep LISTEN | awk '{ sub(/.*:/, ""); sub(/\(LISTEN.*/, ""); print}' | uniq | grep $PORT)
 	if [ $? -eq 0 ]; then
-		echo 0
-		return 0
+		echo $PORT
+		echo $RET_PORT
+		if [[ $PORT -eq $RET_PORT ]]; then
+			echo 0
+			return 0
+		else
+			echo 1
+			return 1
+		fi
 	else
 		echo 1
 		return 1
