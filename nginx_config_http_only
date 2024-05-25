@@ -11,11 +11,11 @@ map $arg_v $asset_immutable {
 
 
 server {
-    listen 80;
-    server_name cloud.example.com;
+    listen __PORT__;
+    server_name __CLOUD_URL__;
 
     # Path to the root of your installation
-    root /var/www/nextcloud;
+    root __WEB_ROOT__;
 
     # Use Mozilla's guidelines for SSL/TLS settings
     # https://mozilla.github.io/server-side-tls/ssl-config-generator/

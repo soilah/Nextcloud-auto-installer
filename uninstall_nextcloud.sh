@@ -14,4 +14,6 @@ ok "Done"
 info "Removing directories and files..."
 rm -r $NC_INSTALLATION_DIRECTORY
 rm ./ncvars.env
+rm /etc/nginx/sites-enabled/nextcloud.conf
+nginx -s reload &>/dev/nul
 ok "Done"
