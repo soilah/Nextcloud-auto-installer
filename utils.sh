@@ -117,7 +117,8 @@ is_port_open() {
 
 check_open_port() {
 	PORT=$1
-	if [ $(is_port_open $PORT) -eq 0 ]; then
+	PORT_OPEN=$(is_port_open $PORT)
+	if [ "$PORT_OPEN" == 0 ]; then
 		error "Port $PORT is already in use! Choose a custom port instead."
 		exit
 	fi
