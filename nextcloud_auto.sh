@@ -73,13 +73,16 @@ check_create() {
 }
 
 
+clean_exit() {
+	rm -f ncvars.env &>/dev/null
+	exit
+}
 
 
-check_args "$@"
-echo INSTALL PATH: $WEB_SERVER_ROOT_PATH
-echo WEB PORT: $WEB_SERVER_PORT
+
 
 check_root
+check_args "$@"
 check_create ncvars.env
 
 
@@ -87,6 +90,30 @@ check_open_port $WEB_SERVER_PORT
 
 check_package nginx
 check_package mariadb-server
+
+PORT_OPEN=$(is_port_open 3306)
+
+if [ "$PORT_OPEN" == 1 ]; then
+	info "Mariadb seems to be inactive or does not run on port 3306... The script can try to handle that, or you could fix it manually."
+	ANS=$(prompt_yes_no "Do you want the script to try and start the service? If no the script will exit. (yes/no): ")
+	if [ "$ANS" == "yes" ]; then
+		systemctl start mysql &>/dev/null
+		STATUS=$(systemctl is-active mysql)
+		if [ "$STATUS" == 'inactive' ]; then
+			error "Could not start mysql... You have to fix it manually."
+			clean_exit
+		else
+			ok "OK. Mysql seems to be running again. Continuing with nextcloud installation."
+		fi
+	else
+		info "Exiting... Re-run the script when the issue is fixed."
+		clean_exit
+	fi
+else
+	ok "Mysql service is running..."
+fi
+
+
 
 
 ######################
@@ -99,7 +126,7 @@ if [ -z "$CLOUD_URL" ]; then
 	if [ -z "$CLOUD_URL" ]; then
 		#echo -e "${RED}No site url given. Exiting";
 		error "No site url given. Exiting";
-		exit
+		clean_exit
 	fi
 else
 	echo "Cloud url: $CLOUD_URL"
@@ -153,7 +180,6 @@ echo -e "\n"
 ###########################
 
 
-
 #########################
 ### DATABASE CREATION ###
 #########################
@@ -188,9 +214,9 @@ ok "Done"
 echo "Downloading latest nextcloud ..."
 wget https://download.nextcloud.com/server/releases/latest.zip &> /dev/null
 echo "Installing to $WEB_SERVER_ROOT_PATH"
-unzip latest.zip > /dev/null &> /dev/null
+unzip latest.zip &> /dev/null
 mkdir -p $WEB_SERVER_ROOT_PATH &> /dev/null
-cp -r nextcloud/* $WEB_SERVER_ROOT_PATH
+cp -r nextcloud/* $WEB_SERVER_ROOT_PATH &> /dev/null
 chown -R www-data:www-data $WEB_SERVER_ROOT_PATH
 echo "export NC_INSTALLATION_DIRECTORY=$WEB_SERVER_ROOT_PATH" >> ./ncvars.env
 ok "Done"
